@@ -3,4 +3,4 @@
 - Download webdriver for your current chrome version (https://chromedriver.chromium.org/downloads) and put it into the same folder
 - Cmd/PowerShell from working folder
 - Run 'pip install -r requirements.txt'
-- Run 'py NvidiaShopBot.py'
+- Run 'py NvidiaShopBot.py' (for more information run 'py NvidiaShopBot.py -h')
