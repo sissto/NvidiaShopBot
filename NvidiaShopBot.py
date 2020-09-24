@@ -29,7 +29,7 @@ def TryCheckOut(driver):
         if (checkoutButton is not None):
             checkoutButton.click()
     except Exception as ex:
-        print('{0}: ERROR - {1}'.format(datetime.datetime.now(), ex))
+        LogMessage('ERROR - {0}'.format(ex))
 
 def WaitForBuyingButton(buyButton, maxWait):
     try:
@@ -38,12 +38,25 @@ def WaitForBuyingButton(buyButton, maxWait):
             time.sleep(1)
             index += 1
     except Exception as ex:
-        print('{0}: ERROR - {1}'.format(datetime.datetime.now(), ex))
+        LogMessage('ERROR - {0}'.format(ex))
 
 def SendIFTTTWebhookRequest(eventName, key):
     if (eventName is not None and len(eventName) > 0 and key is not None and len(key) > 0):
         url = 'https://maker.ifttt.com/trigger/{0}/with/key/{1}'.format(eventName, key)
         requests.api.post(url)
+
+def FindElementByCSSSelector(driver, selector):
+    if (driver is None or selector is None or len(selector) == 0):
+        return None
+    try:
+        element = driver.find_element_by_css_selector(selector)
+        return element
+    except Exception:
+        pass
+
+def LogMessage(message):
+    if (message is not None and len(message) > 0):
+        print('{0}: {1}'.format(datetime.datetime.now(), message))
 
 def Start(args):
     driver = webdriver.Chrome()
@@ -52,13 +65,13 @@ def Start(args):
     while (not inStock):
         try:
             driver.get(SHOP_URL)
-            try:
-                buyLink = driver.find_element_by_css_selector('a.featured-buy-link')
-            except:
-                pass
-            
+            buyLink = FindElementByCSSSelector(driver, 'a.featured-buy-link')
             if (buyLink is None):
-                print('{0}: ERROR - Could not get buy button. ==> waiting {1} seconds'.format(datetime.datetime.now(), args.RefreshRate))
+                checkAvailabilityButton = FindElementByCSSSelector(driver, 'span.extra_style.buy-link') # 'Verfügbarkeit prüfen'
+                if (checkAvailabilityButton is not None):
+                    LogMessage('NOT AVAILABLE ==> waiting {0} seconds'.format(args.RefreshRate))
+                else:
+                    LogMessage('ERROR - Could not get buy button. ==> waiting {0} seconds'.format(args.RefreshRate))
                 time.sleep(args.RefreshRate)
                 continue
             
@@ -71,14 +84,14 @@ def Start(args):
                 TryCheckOut(driver)
 
             else:
-                print('{0}: OUT OF STOCK ==> waiting {1} seconds'.format(datetime.datetime.now(), args.RefreshRate))
+                LogMessage('OUT OF STOCK ==> waiting {0} seconds'.format(args.RefreshRate))
                 time.sleep(args.RefreshRate)
         except Exception as ex:
-            print('{0}: ERROR - {1}'.format(datetime.datetime.now(), ex))
+            LogMessage('ERROR - {0}'.format(ex))
 
     SendIFTTTWebhookRequest(args.WebhookEventName, args.WebhookKey)
     SendToastNotification()
-    print('{0}: IN STOCK ==> Finish process by yourself in browser AND DO NOT CLOSE THIS WINDOW!'.format(datetime.datetime.now()))
+    LogMessage('IN STOCK ==> Finish process by yourself in browser AND DO NOT CLOSE THIS WINDOW!')
     input() # do not close browser
 
 parser = argparse.ArgumentParser(description='Bot for buying things in NVIDIA online shop.')
