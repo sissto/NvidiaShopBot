@@ -95,8 +95,8 @@ def Start(args):
     input() # do not close browser
 
 parser = argparse.ArgumentParser(description='Bot for buying things in NVIDIA online shop.')
-parser.add_argument('-r', action='store', dest='RefreshRate', help='The web refresh rate (in seconds). [Default={0}]'.format(DEFAULT_REFRESH_RATE), default=DEFAULT_REFRESH_RATE)
-parser.add_argument('-w', action='store', dest='MaxBuyButtonWait', help='Max waiting time for buy button (in seconds). [Default={0}]'.format(DEFAULT_MAX_BUYBUTTON_WAIT), default=DEFAULT_MAX_BUYBUTTON_WAIT)
+parser.add_argument('-r', action='store', dest='RefreshRate', type=int, help='The web refresh rate (in seconds). [Default={0}]'.format(DEFAULT_REFRESH_RATE), default=DEFAULT_REFRESH_RATE)
+parser.add_argument('-w', action='store', dest='MaxBuyButtonWait', type=int, help='Max waiting time for buy button (in seconds). [Default={0}]'.format(DEFAULT_MAX_BUYBUTTON_WAIT), default=DEFAULT_MAX_BUYBUTTON_WAIT)
 parser.add_argument('-k', action='store', dest='WebhookKey', help='The IFTTT webhook key.')
 parser.add_argument('-e', action='store', dest='WebhookEventName', help='The IFTTT webhook event name. [Default={0}]'.format(DEFAULT_WEBHOOK_EVENTNAME), default=DEFAULT_WEBHOOK_EVENTNAME)
 parser.add_argument('--testwebhook', action='store_true', dest='TestWebhook', help='Only test the IFTTT webhook.')
